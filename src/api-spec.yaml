@@ -1,0 +1,131 @@
+openapi: '3.0.0'
+info:
+  title: PixowlGram
+  version: '1.0'
+servers:
+  - url: http://localhost:5000
+  - url: https://{environment}.pixowlgram.com
+    variables:
+      environment:
+        default: api
+        enum:
+          - api # Production server
+          - api-dev # Development server
+paths:
+  /posts:
+    post:
+      summary: Add a new post
+      description: |
+        Add a new post with its image, description and upload time
+      operationId: addPost
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/NewPost'
+      responses:
+        '200':
+          description: created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+    get:
+      summary: Get a list of posts
+      description: |
+        get a paginated list of posts ordered chronologically
+        (from newes to oldest)
+      operationId: getPosts
+      parameters:
+        - $ref: '#/components/parameters/limitParam'
+      responses:
+        '200':
+          description: A list of posts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Posts'
+
+  /likes:
+    post:
+      summary: Add a like to a post
+      description: |
+        Add a like to a post and increments the number of likes in the post
+      operationId: addLike
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/NewLike'
+      responses:
+        '200':
+          description: created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+
+components:
+  schemas:
+    NewPost:
+      type: object
+      properties:
+        description:
+          type: string
+        photo:
+          type: string
+          format: byte
+    Post:
+      type: object
+      properties:
+        id:
+          type: integer
+        description:
+          type: string
+        photo:
+          type: string
+        likes:
+          type: integer
+        created_at:
+          type: string
+          format: date
+      example:
+        id: 1
+        description: Este es mi primer post y espero que les guste
+        photo: base64 encrypted photo
+        likes: 100
+        created_at: '2020-12-18T14:30:00'
+    Posts:
+      type: array
+      items:
+        $ref: '#/components/schemas/Post'
+      example:
+        - id: 1
+          description: Este es mi primer post y espero que les guste
+          photo: base64 encrypted photo
+          likes: 100
+          created_at: '2020-12-18T14:30:00'
+        - id: 2
+          description: Nuevo post creado
+          photo: base64 encrypted photo
+          likes: 100
+          created_at: '2020-12-19T11:13:05'
+    NewLike:
+      type: object
+      properties:
+        post_id:
+          type: integer
+
+  parameters:
+    limitParam:
+      name: limit
+      in: query
+      description: Maximum number of items to return
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 50
+        default: 10

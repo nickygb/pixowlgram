@@ -1,0 +1,26 @@
+version: '3.2'
+services:
+  mysql:
+    image: 'mysql:5.6'
+    environment:
+      MYSQL_DATABASE: pixowlgramdb
+      MYSQL_USER: user
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: secret
+    ports:
+      - '3306:3306'
+    networks:
+      - my_network
+  app:
+    build: .
+    depends_on:
+      - mysql
+    ports:
+      - '5000:5000'
+    networks:
+      - my_network
+    expose:
+      - '5000'
+
+networks:
+  my_network:

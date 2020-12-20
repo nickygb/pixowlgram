@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
-import Pool from 'mysql2/typings/mysql/lib/Pool';
+import Knex from 'knex';
 
-const makeAddLike = (connection: Pool) => async (req: Request, res: Response) => {
+const makeAddLike = (connection: Knex) => async (req: Request, res: Response) => {
   res.send('TODO: Implementar addLike');
 };
 
-export const makeController = (connection: Pool) => ({
+export const makeController = (connection: Knex) => ({
   addLike: makeAddLike(connection),
 });

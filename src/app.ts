@@ -1,24 +1,34 @@
-import mysql from 'mysql2';
 import express from 'express';
+import bodyParser from 'body-parser';
+import * as OpenApiValidator from 'express-openapi-validator';
 import routes from './routes';
+import { errorHandler } from './middlewares/errorHandler';
+import Knex from 'knex';
+import knexfile from './knexfile';
+import path from 'path';
 
-const PORT = process.env.PORT || 8001;
+const PORT = process.env.PORT || 5000;
 const app = express();
 
 // SQL Pool connections
-const connection = mysql.createPool({
-  host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'root',
-  database: process.env.DB_NAME || 'test',
-  waitForConnections: true,
-  connectionLimit: parseInt(process.env.DB_CONNECTION_LIMIT) || 10,
-});
+const knex = Knex(knexfile);
+
+// Middlewares
+app.use(bodyParser.json());
+app.use(
+  OpenApiValidator.middleware({
+    apiSpec: path.join(__dirname, 'api-spec.yaml'),
+    validateRequests: true,
+    validateResponses: false,
+  })
+);
 
 // Creo las rutas
-const postRoutes = routes.makePostsRoutes(connection);
-const likeRoutes = routes.makeLikeRoutes(connection);
+const postRoutes = routes.makePostsRoutes(knex);
+const likeRoutes = routes.makeLikeRoutes(knex);
 app.use('/posts', postRoutes);
 app.use('/likes', likeRoutes);
+app.use(errorHandler);
 
 // Inicio el server
 app.listen(PORT, () => {

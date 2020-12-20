@@ -105,3 +105,6 @@ dist
 
 # Custom
 .pixowlgram
+src/generated
+.s3rver
+mydb.sqlite

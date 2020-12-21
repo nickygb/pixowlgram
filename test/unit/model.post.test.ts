@@ -41,6 +41,7 @@ describe('Post model', function () {
       const newPost = {
         description: faker.lorem.text(),
         photoUrl: faker.image.imageUrl(),
+        userId: faker.random.number(),
       };
       const post = await model.add(newPost);
       const nowDate = new Date(new Date().toUTCString());
@@ -59,6 +60,7 @@ describe('Post model', function () {
       const newPost = {
         description: faker.lorem.text(),
         photoUrl: faker.image.imageUrl(),
+        userId: faker.random.number(),
       };
       const { id: postId } = await model.add(newPost);
       const userId = 1;
@@ -70,6 +72,7 @@ describe('Post model', function () {
       const newPost = {
         description: faker.lorem.text(),
         photoUrl: faker.image.imageUrl(),
+        userId: faker.random.number(),
       };
       const { id: postId } = await model.add(newPost);
       const userId = 1;
@@ -86,16 +89,19 @@ describe('Post model', function () {
         description: faker.lorem.text(),
         photoUrl: faker.image.imageUrl(),
         createdAt: nowUtcAddHours(0),
+        userId: faker.random.number(),
       };
       const newPost2 = {
         description: faker.lorem.text(),
         photoUrl: faker.image.imageUrl(),
         createdAt: nowUtcAddHours(5),
+        userId: faker.random.number(),
       };
       const newPost3 = {
         description: faker.lorem.text(),
         photoUrl: faker.image.imageUrl(),
         createdAt: nowUtcAddHours(2),
+        userId: faker.random.number(),
       };
       const addedPosts = await Promise.all([model.add(newPost1), model.add(newPost2), model.add(newPost3)]);
       const posts = await model.getAll();

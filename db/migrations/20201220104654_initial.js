@@ -3,7 +3,9 @@ exports.up = async function (knex) {
     table.increments('id').unsigned().primary();
     table.text('description').notNullable();
     table.integer('likes').unsigned().notNullable().defaultTo(0);
+    table.integer('user_id').unsigned(); // This one cames from external database. I assume that is an integer unsinged
     table.datetime('created_at').notNullable().defaultTo(knex.fn.now());
+    table.index('created_at'); // Add index to improve queries by date
   });
 
   await knex.schema.createTable('photo', (table) => {

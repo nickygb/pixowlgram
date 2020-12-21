@@ -3,6 +3,7 @@ import Knex from 'knex';
 interface NewPost {
   description: string;
   photoUrl: string;
+  userId: number;
   createdAt?: Date;
 }
 
@@ -41,7 +42,7 @@ export class Post {
   async add(newPost: NewPost): Promise<IPost> {
     let postId;
     await this._connection.transaction(async (trx) => {
-      const postItem = { description: newPost.description, created_at: newPost.createdAt };
+      const postItem = { description: newPost.description, created_at: newPost.createdAt, user_id: newPost.userId };
       [postId] = await trx.table('post').insert(postItem);
 
       const photoItem = { url: newPost.photoUrl, post_id: postId };

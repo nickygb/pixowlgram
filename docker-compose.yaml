@@ -1,4 +1,4 @@
-version: '3.2'
+version: '3.4'
 services:
   mysql:
     image: 'mysql:5.6'
@@ -11,16 +11,61 @@ services:
       - '3306:3306'
     networks:
       - my_network
+  localstack:
+    image: localstack/localstack:0.11.3
+    ports:
+      - '4566-4599:4566-4599'
+      - '8055:8080'
+    environment:
+      - SERVICES=s3
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+      - EDGE_PORT=4566
+      - LAMBDA_REMOTE_DOCKER=0
+      - LAMBDA_EXECUTOR=docker
+      - LAMBDA_DOCKER_NETWORK=localstack-network
+    volumes:
+      - '.localstack:/tmp/localstack'
+      - '/var/run/docker.sock:/var/run/docker.sock'
+      - ./aws-local:/docker-entrypoint-initaws.d
+    networks:
+      - my_network
   app:
-    build: .
+    build:
+      context: './'
+      dockerfile: Dockerfile
+      target: release
     depends_on:
       - mysql
+      - localstack
+    environment:
+      DB_HOST: mysql
+      DB_NAME: pixowlgramdb
+      DB_USER: user
+      DB_PASSWORD: secret
+      DB_PORT: '3306'
+      BUCKET_PHOTOS: localstack-photos # Watch ./aws-local/createBucket.sh
+      PORT: '5000'
+      WEBAPP_HOST: localhost
     ports:
       - '5000:5000'
     networks:
       - my_network
     expose:
       - '5000'
+  test:
+    depends_on:
+      - app
+    build:
+      context: './'
+      dockerfile: Dockerfile
+      target: test
+    command: dockerize -wait tcp://mysql:3306 -timeout 30s
+      sh -c "yarn test:int"
+    environment:
+      APP_URL: http://app:5000
+    networks:
+      - my_network
 
 networks:
   my_network:

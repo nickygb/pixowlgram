@@ -109,3 +109,4 @@ src/generated
 .s3rver
 mydb.sqlite
 .localstack
+api-spec.json

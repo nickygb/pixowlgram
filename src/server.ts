@@ -8,10 +8,14 @@ import { WebAppConfig } from './config';
 import routes from './routes';
 import { errorHandler } from './middlewares/errorHandler';
 import { authMiddleware } from './middlewares/authMiddleware';
+import swaggerUi from 'swagger-ui-express';
+import swaggerDoc from './api-spec.json';
 require('express-async-errors');
 
 export const makeServer = (knex: Knex, s3Client: S3, CONFIG: WebAppConfig): Express => {
   const app = express();
+
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc));
 
   const healthRoutes = routes.makeHealthRoutes(knex);
   app.use('/health', healthRoutes);

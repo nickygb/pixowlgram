@@ -18,6 +18,7 @@
     "@types/s3rver": "^0.0.32",
     "@types/sinon": "^9.0.9",
     "@types/supertest": "^2.0.10",
+    "@types/swagger-ui-express": "^4.1.2",
     "@types/uuid": "^8.3.0",
     "@typescript-eslint/eslint-plugin": "^4.10.0",
     "@typescript-eslint/parser": "^4.10.0",
@@ -39,7 +40,8 @@
     "supertest": "^6.0.1",
     "ts-mocha": "^8.0.0",
     "ts-node": "^9.1.1",
-    "typescript": "^4.1.3"
+    "typescript": "^4.1.3",
+    "yamljs": "^0.3.0"
   },
   "dependencies": {
     "aws-sdk": "^2.812.0",
@@ -50,13 +52,14 @@
     "knex": "^0.21.14",
     "multer": "^1.4.2",
     "mysql": "^2.18.1",
+    "swagger-ui-express": "^4.1.5",
     "uuid": "^8.3.2"
   },
   "scripts": {
-    "build:ts": "yarn clean && tsc --build && yarn copy-files",
+    "build:ts": "yarn clean && yarn spec:json && tsc --build && yarn copy-files",
     "build:docker": "docker-compose build",
     "start:fresh": "yarn build:docker && yarn start",
-    "start": "docker-compose up -d; yarn wait:mysql && yarn db:migrate && yarn db:seed",
+    "start": "docker-compose up -d app",
     "stop": "docker-compose down -v",
     "restart": "yarn stop && yarn start",
     "start:db": "docker-compose up -d mysql",
@@ -78,6 +81,7 @@
     "test:unit": "yarn stop && docker-compose up -d mysql && yarn wait:mysql && ts-mocha test/unit/*.**.ts -R list --exit",
     "test:integration": "ts-mocha test/integration/*.**.ts -R list",
     "test:docker": "docker-compose up test",
-    "test:fresh:docker": "yarn build:docker && docker-compose up test"
+    "test:fresh:docker": "yarn build:docker && docker-compose up test",
+    "spec:json": "npx yaml2json -p src/api-spec.yaml > src/api-spec.json"
   }
 }

@@ -1,6 +1,5 @@
 import { makeRoutes as makePostsRoutes } from './posts';
-import { makeRoutes as makeLikeRoutes } from './likes';
 
-const routes = { makePostsRoutes, makeLikeRoutes };
+const routes = { makePostsRoutes };
 
 export default routes;

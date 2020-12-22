@@ -1,3 +1,5 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const path = require('path');
 // Update with your config settings.
 module.exports = {
   client: 'mysql',
@@ -13,9 +15,9 @@ module.exports = {
     max: 20,
   },
   migrations: {
-    directory: '../db/migrations',
+    directory: path.join(__dirname, '..', 'db', 'migrations'),
   },
   seeds: {
-    directory: '../db/seeds',
+    directory: path.join(__dirname, '..', 'db', 'seeds'),
   },
 };

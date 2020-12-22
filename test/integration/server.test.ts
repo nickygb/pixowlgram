@@ -3,15 +3,20 @@ import chai from 'chai';
 import faker from 'faker';
 const expect = chai.expect;
 import fs from 'fs';
+import path from 'path';
+// import Knex from 'knex';
+// import knexfile from '../../src/knexfile';
+// const knex = Knex(knexfile);
 
 const APP_URL = process.env.APP_URL;
 const BUCKET_PHOTOS = process.env.BUCKET_PHOTOS;
 
-describe('Web server', () => {
+describe('Web server', function () {
+  this.timeout(100000);
   before(async function () {
-    this.timeout(100000);
-    // TODO: Correr la migracion y el seed dentro del test
-    // Vero como lo hago para los tests unitarios (pero ahora tengo que usar la db mysql del docker-compose)
+    // this.timeout(100000);
+    // await knex.migrate.latest();
+    // await knex.seed.run();
   });
   describe('--> GET /posts', () => {
     it('--> Should return list of posts created and the next_cursor', async () => {
@@ -20,6 +25,7 @@ describe('Web server', () => {
         // qs: { limit: 1 },
         json: true,
       });
+
       expect(posts.length).to.be.equal(10);
       expect(nextCursor).to.be.an('string');
     });
@@ -43,10 +49,10 @@ describe('Web server', () => {
 
       const { posts: postsPage2, nextCursor: nextCursor2 } = await rp.get({
         uri: `${APP_URL}/posts`,
-        qs: { limit: 15, nextCursor: nextCursor1 },
+        qs: { limit: 20, nextCursor: nextCursor1 },
         json: true,
       });
-      expect(postsPage2.length).to.be.equal(15);
+      expect(postsPage2.length).to.be.lte(20);
       expect(nextCursor1).not.to.be.equal(nextCursor2);
     });
   });
@@ -56,7 +62,7 @@ describe('Web server', () => {
       const formData = {
         description: faker.lorem.text(),
         photo: {
-          value: fs.createReadStream('assets/480.jpeg'),
+          value: fs.createReadStream(path.join(__dirname, '..', 'assets', '480.jpeg')),
           options: {
             filename: '480.jpeg',
             contentType: 'image/jpg',

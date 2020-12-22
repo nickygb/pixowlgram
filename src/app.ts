@@ -1,36 +1,23 @@
-import express from 'express';
-import bodyParser from 'body-parser';
-import * as OpenApiValidator from 'express-openapi-validator';
-import routes from './routes';
-import { errorHandler } from './middlewares/errorHandler';
 import Knex from 'knex';
 import knexfile from './knexfile';
-import path from 'path';
+import CONFIG from './config';
+import { S3 } from 'aws-sdk';
+import { makeServer } from './server';
 
-const PORT = process.env.PORT || 5000;
-const app = express();
-
-// SQL Pool connections
+// Clients
 const knex = Knex(knexfile);
+const s3Client = new S3({
+  region: process.env.AWS_REGION || 'us-east-1',
+  endpoint: process.env.IS_OFFLINE ? 'http://localhost:4566' : undefined,
+  s3ForcePathStyle: process.env.IS_OFFLINE ? true : undefined,
+  accessKeyId: process.env.IS_OFFLINE ? 'S3RVER' : undefined,
+  secretAccessKey: process.env.IS_OFFLINE ? 'S3RVER' : undefined,
+});
 
-// Middlewares
-app.use(bodyParser.json());
-app.use(
-  OpenApiValidator.middleware({
-    apiSpec: path.join(__dirname, 'api-spec.yaml'),
-    validateRequests: true,
-    validateResponses: false,
-  })
-);
-
-// Creo las rutas
-const postRoutes = routes.makePostsRoutes(knex);
-const likeRoutes = routes.makeLikeRoutes(knex);
-app.use('/posts', postRoutes);
-app.use('/likes', likeRoutes);
-app.use(errorHandler);
+// Server
+const server = makeServer(knex, s3Client, CONFIG);
 
 // Inicio el server
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+server.listen(CONFIG.port, () => {
+  console.log(`Server running on http://localhost:${CONFIG.port}`);
 });

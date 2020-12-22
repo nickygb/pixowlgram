@@ -13,7 +13,8 @@ const makeAddPost = (connection: Knex, s3Client: S3, config: WebAppConfig) => {
 
   return async (req, res) => {
     // 1) Upload photo to S3 bucket
-    const photoUrl = await uploadPhotoService(req.files[0].buffer);
+    const file = req.files[0];
+    const photoUrl = file ? await uploadPhotoService(req.files[0].buffer) : undefined;
 
     // 2) Add post to db
     const post = await postModel.add({

@@ -39,15 +39,16 @@ paths:
       operationId: getPosts
       parameters:
         - $ref: '#/components/parameters/limitParam'
+        - $ref: '#/components/parameters/nextCursor'
       responses:
         '200':
           description: A list of posts
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Posts'
+                $ref: '#/components/schemas/PaginatedPosts'
 
-  /likes:
+  /posts/like:
     post:
       summary: Add a like to a post
       description: |
@@ -56,7 +57,7 @@ paths:
       requestBody:
         required: true
         content:
-          multipart/form-data:
+          application/json:
             schema:
               $ref: '#/components/schemas/NewLike'
       responses:
@@ -97,21 +98,27 @@ components:
         photo: base64 encrypted photo
         likes: 100
         created_at: '2020-12-18T14:30:00'
-    Posts:
-      type: array
-      items:
-        $ref: '#/components/schemas/Post'
-      example:
-        - id: 1
-          description: Este es mi primer post y espero que les guste
-          photo: base64 encrypted photo
-          likes: 100
-          created_at: '2020-12-18T14:30:00'
-        - id: 2
-          description: Nuevo post creado
-          photo: base64 encrypted photo
-          likes: 100
-          created_at: '2020-12-19T11:13:05'
+    PaginatedPosts:
+      type: object
+      properties:
+        nextCursor:
+          type: string
+        posts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Post'
+          example:
+            - id: 1
+              description: Este es mi primer post y espero que les guste
+              photo: base64 encrypted photo
+              likes: 100
+              created_at: '2020-12-18T14:30:00'
+            - id: 2
+              description: Nuevo post creado
+              photo: base64 encrypted photo
+              likes: 100
+              created_at: '2020-12-19T11:13:05'
+
     NewLike:
       type: object
       properties:
@@ -129,3 +136,10 @@ components:
         minimum: 1
         maximum: 50
         default: 10
+    nextCursor:
+      name: nextCursor
+      in: query
+      description: Cursor to get following posts
+      required: false
+      schema:
+        type: string

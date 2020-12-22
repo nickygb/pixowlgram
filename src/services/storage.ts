@@ -2,14 +2,14 @@ import { S3 } from 'aws-sdk';
 import { v4 as uuid } from 'uuid';
 
 export const makeUploadService = (client: S3, bucket: string, folder: string) => {
-  return async (photo: string): Promise<string> => {
-    const key = `${folder}/${uuid()}`;
-    const buffer = Buffer.from(photo.replace(/^data:image\/\w+;base64,/, ''), 'base64');
+  return async (photoBuffer: Buffer): Promise<string> => {
+    const key = folder ? `${folder}/${uuid()}` : `${uuid()}`;
+    // const buffer = Buffer.from(photo.replace(/^data:image\/\w+;base64,/, ''), 'base64');
     await client
       .putObject({
         Bucket: bucket,
         Key: key,
-        Body: buffer,
+        Body: photoBuffer,
         ContentEncoding: 'base64',
       })
       .promise();

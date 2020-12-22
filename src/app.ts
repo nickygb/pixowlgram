@@ -6,13 +6,14 @@ import { makeServer } from './server';
 
 // Clients
 const knex = Knex(knexfile);
-const s3Client = new S3({
+const s3Config = {
   region: process.env.AWS_REGION || 'us-east-1',
-  endpoint: process.env.IS_OFFLINE ? 'http://localhost:4566' : undefined,
-  s3ForcePathStyle: process.env.IS_OFFLINE ? true : undefined,
-  accessKeyId: process.env.IS_OFFLINE ? 'S3RVER' : undefined,
-  secretAccessKey: process.env.IS_OFFLINE ? 'S3RVER' : undefined,
-});
+  endpoint: process.env.S3_ENDPOINT || undefined,
+  s3ForcePathStyle: !!process.env.S3_FORCE_PATH_STYLE,
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID || undefined,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || undefined,
+};
+const s3Client = new S3(s3Config);
 
 // Server
 const server = makeServer(knex, s3Client, CONFIG);

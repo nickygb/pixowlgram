@@ -8,9 +8,13 @@ import { WebAppConfig } from './config';
 import routes from './routes';
 import { errorHandler } from './middlewares/errorHandler';
 import { authMiddleware } from './middlewares/authMiddleware';
+require('express-async-errors');
 
 export const makeServer = (knex: Knex, s3Client: S3, CONFIG: WebAppConfig): Express => {
   const app = express();
+
+  const healthRoutes = routes.makeHealthRoutes(knex);
+  app.use('/health', healthRoutes);
 
   // Middlewares
   app.use(bodyParser.json());

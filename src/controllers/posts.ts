@@ -29,10 +29,8 @@ const makeAddPost = (connection: Knex, s3Client: S3, config: WebAppConfig) => {
 const makeGetPosts = (connection: Knex) => {
   const postModel = new Post(connection);
   return async (req: Request, res: Response) => {
-    const nextCursor = req.query.next_cursor as string;
+    const nextCursor = req.query.nextCursor as string;
     const limit = parseInt(req.query.limit as string);
-    console.log(nextCursor);
-    console.log(limit);
     const postsObj = await postModel.getAll(nextCursor, limit);
     res.send(postsObj);
   };

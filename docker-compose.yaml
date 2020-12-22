@@ -36,8 +36,8 @@ services:
       dockerfile: Dockerfile
       target: release
     depends_on:
-      - mysql
       - localstack
+      - migration_seed
     environment:
       DB_HOST: mysql
       DB_NAME: pixowlgramdb
@@ -61,7 +61,7 @@ services:
       - '5000'
   migration_seed:
     depends_on:
-      - app
+      - mysql
     build:
       context: './'
       dockerfile: Dockerfile
@@ -79,6 +79,7 @@ services:
   test:
     depends_on:
       - migration_seed
+      - app
     build:
       context: './'
       dockerfile: Dockerfile

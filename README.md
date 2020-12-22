@@ -12,8 +12,11 @@ It use docker-compose to create all the necesary services to get a local environ
 - S3 Bucket using localstack
 - Webserver on http://localhost:5000
 
-Once it finished you can access the route http://localhost:5000/api-doc to get the documentation of this API, and to learn how
+Once it finished you can access the route http://localhost:5000/api-docs to get the documentation of this API, and to learn how
 to use it.
+
+NOTE: If the endpoint http://localhost:5000/posts return error of ECCONREFUSED, you should wait until the database is ready.
+NOTE: If you get an empty array of posts in http://localhost:5000/posts. You should wait until the database seeding finish it works (it takes some seconds)
 
 ## Tests
 
